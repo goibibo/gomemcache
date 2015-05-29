@@ -108,7 +108,11 @@ func (ss *ServerList) PickServer(key string) (net.Addr, error) {
 	bufp := keyBufPool.Get().(*[]byte)
 	n := copy(*bufp, key)
 	cs := crc32.ChecksumIEEE((*bufp)[:n])
-	cs = ((cs >> 16) & 0x7fff) | 1
+	cs = ((cs >> 16) & 0x7fff)
+	if cs == 0 {
+		cs = 1
+	}
+
 	keyBufPool.Put(bufp)
 
 	return ss.addrs[cs%uint32(len(ss.addrs))], nil
