@@ -387,24 +387,39 @@ func (c *Client) touchFromAddr(addr net.Addr, keys []string, expiration int32) e
 	return c.withAddrRw(addr, func(rw *bufio.ReadWriter) error {
 		for _, key := range keys {
 			if _, err := fmt.Fprintf(rw, "touch %s %d\r\n", key, expiration); err != nil {
+			fmt.Println("one")
 				return err
 			}
 			if err := rw.Flush(); err != nil {
+			  fmt.Println("two")
+
 				return err
 			}
 			line, err := rw.ReadSlice('\n')
+			  fmt.Println("third")
+
 			if err != nil {
+				  fmt.Println("four")
+
 				return err
 			}
 			switch {
 			case bytes.Equal(line, resultTouched):
+			  fmt.Println("five")
+
 				break
 			case bytes.Equal(line, resultNotFound):
+				  fmt.Println("six")
+
 				return ErrCacheMiss
 			default:
+				  fmt.Println("seven")
+
 				return fmt.Errorf("memcache: unexpected response line from touch: %q", string(line))
 			}
 		}
+		  fmt.Println("seven")
+
 		return nil
 	})
 }
